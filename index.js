@@ -62,6 +62,18 @@ async function run() {
             res.send(users);
         });
 
+        //  only Admin can access 
+        const verifyAdmin = async (req, res, next) => {
+            const requester = req.decoded.email;
+            const requesterAccount = await userCollection.findOne({ email: requester });
+            if (requesterAccount.role === 'admin') {
+                next();
+            }
+            else {
+                res.status(403).send({ message: 'forbidden' });
+            }
+        }
+
         // Make Admin
         app.put('/user/admin/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
@@ -73,6 +85,13 @@ async function run() {
             res.send(result);
         })
 
+        // Admin
+        app.get('/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await userCollection.findOne({ email: email });
+            const isAdmin = user.role === 'admin';
+            res.send({ admin: isAdmin })
+        })
 
         // Find Multiple Documents
         // All Product api         
