@@ -75,7 +75,7 @@ async function run() {
         }
 
         // Make Admin
-        app.put('/user/admin/:email', verifyJWT, async (req, res) => {
+        app.put('/user/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
             const email = req.params.email;
             const filter = { email: email };
             const updateDoc = {
@@ -111,14 +111,14 @@ async function run() {
             res.send(service);
         });
 
-        // Add Product
+        // Add Product (dashboard)
         app.post('/service', async (req, res) => {
             const newProduct = req.body;
             const result = await serviceCollection.insertOne(newProduct);
             res.send(result);
         });
 
-        // Delete Product
+        // Delete Product (dashboard)
         app.delete('/service/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -149,12 +149,28 @@ async function run() {
         });
 
         // single Purchase 
-        app.get('/order/:id', async (req, res) => {
+        app.get('/order/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const order = await orderCollection.findOne(query);
             res.send(order);
         })
+
+        // manage order (dashboard)
+        app.get('/allorders', async (req, res) => {
+            const query = {};
+            const cursor = orderCollection.find(query);
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
+
+        // Delete order (dashboard)
+        app.delete('/order/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(query);
+            res.send(result);
+        });
 
         // review api 
         app.get('/review', async (req, res) => {
