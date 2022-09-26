@@ -111,6 +111,21 @@ async function run() {
             res.send(service);
         });
 
+        // Add Product
+        app.post('/service', async (req, res) => {
+            const newProduct = req.body;
+            const result = await serviceCollection.insertOne(newProduct);
+            res.send(result);
+        });
+
+        // Delete Product
+        app.delete('/service/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await serviceCollection.deleteOne(query);
+            res.send(result);
+        });
+
         // Purchase 
         app.post('/order', async (req, res) => {
             const order = req.body;
