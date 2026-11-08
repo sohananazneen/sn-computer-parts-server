@@ -1,7 +1,7 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -12,8 +12,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.znpulej.mongodb.net/?retryWrites=true&w=majority`;
-const uri = `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@ac-kdze0dr-shard-00-00.znpulej.mongodb.net:27017,ac-kdze0dr-shard-00-01.znpulej.mongodb.net:27017,ac-kdze0dr-shard-00-02.znpulej.mongodb.net:27017/?ssl=true&replicaSet=atlas-1tb76q-shard-0&authSource=admin`;
+const uri = process.env.MONGODB_URI;
 
 // console.log(uri); //(to check if user & pass is ok)
 
