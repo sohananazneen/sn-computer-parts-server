@@ -249,27 +249,17 @@ async function run() {
       const result = await reviewCollection.insertOne(newReview);
       res.send(result);
     });
+    // Health check route (Server & MongoDB সচল রাখার জন্য)
+    app.get("/api/health", async (req, res) => {
+      try {
+        const sampleData = await userCollection.findOne({});
+        res.status(200).json({ status: "OK", dataFound: !!sampleData });
+      } catch (error) {
+        res.status(500).json({ status: "Error", error: error.message });
+      }
+    });
   } finally {
   }
-  // Health check route (Server & MongoDB সচল রাখার জন্য)
-  app.get("/api/health", async (req, res) => {
-    try {
-      // আপনার ডেটাবেসে সরাসরি ping কমান্ড পাঠানো হচ্ছে
-      await client.db("admin").command({ ping: 1 });
-
-      res.status(200).json({
-        status: "OK",
-        message: "Render server and MongoDB are active!",
-        timestamp: new Date(),
-      });
-    } catch (error) {
-      res.status(500).json({
-        status: "Error",
-        message: "MongoDB connection failed",
-        error: error.message,
-      });
-    }
-  });
 }
 
 run().catch(console.dir);
