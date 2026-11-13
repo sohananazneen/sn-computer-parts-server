@@ -47,7 +47,7 @@ async function run() {
       .db("computer_tools_db")
       .collection("services");
     const orderCollection = client.db("computer_tools_db").collection("order");
-    const userCollection = client.db("computer_tools_db").collection("users");
+    const userCollection = client.db("computer_tools_db").collection("user");
     const reviewCollection = client
       .db("computer_tools_db")
       .collection("review");
@@ -251,6 +251,25 @@ async function run() {
     });
   } finally {
   }
+  // Health check route (Server & MongoDB সচল রাখার জন্য)
+  app.get("/api/health", async (req, res) => {
+    try {
+      // আপনার ডেটাবেসে সরাসরি ping কমান্ড পাঠানো হচ্ছে
+      await client.db("admin").command({ ping: 1 });
+
+      res.status(200).json({
+        status: "OK",
+        message: "Render server and MongoDB are active!",
+        timestamp: new Date(),
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "Error",
+        message: "MongoDB connection failed",
+        error: error.message,
+      });
+    }
+  });
 }
 
 run().catch(console.dir);
